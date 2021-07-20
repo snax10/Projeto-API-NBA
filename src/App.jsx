@@ -1,9 +1,11 @@
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import * as ReactBootstrap from 'react-bootstrap'
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
+
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import * as ReactBootstrap from 'react-bootstrap' //Animate-Spinner
+
+import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
 import './App.css';
 
@@ -12,7 +14,7 @@ function App() {
   const [info, setInfo] = useState([])
   const [loading, setLoading] = useState(false)
 
-  async function getPlayrs() {
+  async function getPlayers() {
     try {
       const data  = await axios.get('https://nba-players.herokuapp.com/players-stats')
         console.log(data)
@@ -25,18 +27,21 @@ function App() {
   }
 
   const columns = [
-    { dataField: "name", text: "Nome do jogador" },
-    { dataField: "points_per_game", text: "Pontos por jogo" },
-    { dataField: "three_point_made_per_game", text: " Três pontos feitos por jogo" },
-    { dataField: "team_name", text: "Time do jogador" },
+    { dataField: "name", text: "Nome do jogador", filter: textFilter() },
+    { dataField: "points_per_game", text: "Pontos por jogo", filter: textFilter() },
+    { dataField: "three_point_made_per_game", text: " Três pontos feitos por jogo", filter: textFilter() },
+    { dataField: "team_name", text: "Time do jogador", filter: textFilter() },
   ]
 
   useEffect(()=> {
-    getPlayrs()
+    getPlayers()
+    
   },[])
   
   return (
     <div className="App">
+
+        <h1>Tabela NBA</h1>
 
         { loading ? (
             <BootstrapTable 
@@ -44,9 +49,12 @@ function App() {
             data={info}
             columns={columns}
             pagination={paginationFactory()}
+            filter={filterFactory()}
           />
         ) : (
-          <ReactBootstrap.Spinner animation="border" /> 
+          <>
+            <ReactBootstrap.Spinner animation="border" /> 
+          </>
         )}
   </div>
   );
